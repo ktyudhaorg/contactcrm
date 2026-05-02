@@ -52,7 +52,12 @@ class WhatsAppService
             'id' => ['nullable', 'string'],
             'from' => ['required', 'string'],
             'name' => ['required', 'string'],
+            'content_type' => ['required', 'string', 'in:text,image,video,audio,document,file'],
             'message' => ['required', 'string'],
+            'media' => ['nullable', 'array'],
+            'media.data' => ['required_with:media', 'string'], // base64
+            'media.mimetype' => ['required_with:media', 'string'],
+            'media.filename' => ['nullable', 'string'],
         ]);
 
         $validated['channel']     = 'whatsapp';

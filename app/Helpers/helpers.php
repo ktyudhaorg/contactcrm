@@ -118,3 +118,6 @@ if (!function_exists('paginateArray')) {
 
 /** WHATSAPP */
 require __DIR__ . '/whatsapp.php';
+
+/** EXTENSION */
+require __DIR__ . '/extension.php';

@@ -5,13 +5,17 @@ namespace App\Http\Services\UseCases\Message;
 use App\Http\Repositories\Contact\ContactRepository;
 use App\Http\Repositories\Conversation\ConversationRepository;
 use App\Http\Repositories\Conversation\MessageRepository;
+use App\Http\Services\Integrations\IntegrationGoogleDriveService;
+use App\Jobs\WhatsApp\WhatsAppUploadMediaJob;
+use Illuminate\Support\Facades\Storage;
 
 class UseCaseMessageService
 {
     public function __construct(
         protected ContactRepository $contactRepository,
         protected MessageRepository $messageRepository,
-        protected ConversationRepository $conversationRepository
+        protected ConversationRepository $conversationRepository,
+        protected IntegrationGoogleDriveService $integrationGoogleDriveService,
     ) {}
 
     public function store($data)
@@ -55,8 +59,14 @@ class UseCaseMessageService
             'sender_type'     => 'contact',
             'sender_id'       => null,
             'channel'         => $data['channel'],
+            'content_type'    => $data['content_type'],
             'body'            => $data['message'],
+            'attachment'      => null,
         ]);
+
+        if (!empty($data['media']['data'])) {
+            WhatsAppUploadMediaJob::dispatch($message->id, $data['media'], $data['content_type'], $whatsapp);
+        }
 
         return $message->refresh();
     }
