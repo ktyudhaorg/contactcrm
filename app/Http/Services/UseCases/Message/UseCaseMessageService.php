@@ -58,7 +58,7 @@ class UseCaseMessageService
             'conversation_id' => $conversation->id,
             'message_id'      => $data['id'] ?? null,
             'sender_type'     => 'contact',
-            'sender_id'       => null,
+            'sender_id'       => $contact->id,
             'channel'         => $data['channel'],
             'content_type'    => $data['content_type'],
             'body'            => $data['message'],
