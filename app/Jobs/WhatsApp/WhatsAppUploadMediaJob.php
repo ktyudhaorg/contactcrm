@@ -2,6 +2,7 @@
 
 namespace App\Jobs\WhatsApp;
 
+use App\Enums\WhatsApp\MessageTypeEnum;
 use App\Http\Repositories\Conversation\MessageRepository;
 use App\Http\Services\Integrations\IntegrationGoogleDriveService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,6 +20,7 @@ class WhatsAppUploadMediaJob implements ShouldQueue
         private array  $media,
         private string $contentType,
         private string $whatsapp,
+        private string $messageType = MessageTypeEnum::SENT,
     ) {
         //
     }
@@ -33,7 +35,7 @@ class WhatsAppUploadMediaJob implements ShouldQueue
         $decoded   = base64_decode($this->media['data']);
         $ext       = guessExtension($this->media['mimetype']);
         $fileName  = $this->contentType . '-' . now()->format('Ymd_His') . '.' . $ext;
-        $cloudPath = $googleDrive->buildPath($this->whatsapp, $this->contentType, $fileName);
+        $cloudPath = $googleDrive->buildPath($this->whatsapp, $this->messageType, $this->contentType, $fileName);
 
         $attachmentUrl = $googleDrive->upload($cloudPath, $decoded);
         $messageRepository->update($this->messageId, ['attachment' => $attachmentUrl]);

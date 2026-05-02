@@ -12,7 +12,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
         Route::post('/logout', [AuthController::class, 'logout'])->middleware('throttle:10,1')->name('logout');
     });
 
-    /** MIDDLEWARE */
+    /** MIDDLEWARE SANCTUM*/
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
 
@@ -20,8 +20,11 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
         Route::prefix('whatsapp')->name('whatsapp.')->group(function () {
             Route::get('/chats', [WhatsAppController::class, 'chats'])->name('chats');
             Route::post('/send-message', [WhatsAppController::class, 'sendMessage'])->name('send-message');
-
-            Route::post('/webhook', [WhatsAppController::class, 'webhook'])->name('webhook');
         });
+    });
+
+    /** MIDDLEWARE HMAC */
+    Route::middleware('hmac')->group(function () {
+        Route::post('/whatsapp/webhook', [WhatsAppController::class, 'webhook'])->name('webhook');
     });
 });

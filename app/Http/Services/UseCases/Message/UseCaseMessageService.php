@@ -2,6 +2,7 @@
 
 namespace App\Http\Services\UseCases\Message;
 
+use App\Enums\WhatsApp\MessageTypeEnum;
 use App\Http\Repositories\Contact\ContactRepository;
 use App\Http\Repositories\Conversation\ConversationRepository;
 use App\Http\Repositories\Conversation\MessageRepository;
@@ -65,7 +66,13 @@ class UseCaseMessageService
         ]);
 
         if (!empty($data['media']['data'])) {
-            WhatsAppUploadMediaJob::dispatch($message->id, $data['media'], $data['content_type'], $whatsapp);
+            WhatsAppUploadMediaJob::dispatch(
+                $message->id,
+                $data['media'],
+                $data['content_type'],
+                $whatsapp,
+                MessageTypeEnum::RECEIVED
+            );
         }
 
         return $message->refresh();

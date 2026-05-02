@@ -8,30 +8,12 @@ class IntegrationWhatsAppService
 {
     protected $client;
 
-    public function __construct()
+    public function __construct(protected IntegrationHmacService $integrationHmacService)
     {
         $this->client = new Client([
             'base_uri' => config('services.whatsapp.url'),
             'timeout' => 120,
         ]);
-    }
-
-    /**
-     * Generate HMAC Headers
-     */
-    function generateHmacHeaders(): array
-    {
-        $timestamp = time();
-        $secretKey = config('services.whatsapp.hmac_secret_key');
-        $publicKey = config('services.whatsapp.hmac_public_key');
-
-        $token = hash_hmac('sha256', $timestamp, $secretKey);
-
-        return [
-            'X-key' => $publicKey,
-            'X-timestamp' => $timestamp,
-            'X-token' => $token,
-        ];
     }
 
     /**
@@ -42,7 +24,7 @@ class IntegrationWhatsAppService
         $body = $method === 'GET' ? '' : json_encode($payload, JSON_UNESCAPED_UNICODE);
 
         $headers = array_merge(
-            $this->generateHmacHeaders(),
+            $this->integrationHmacService->generateHeaders(),
             ['Content-Type' => 'application/json']
         );
 
@@ -67,7 +49,7 @@ class IntegrationWhatsAppService
         string $endpoint,
         array $multipart
     ): array {
-        $headers = $this->generateHmacHeaders();
+        $headers = $this->integrationHmacService->generateHeaders();
 
         $response = $this->client->post($endpoint, [
             'headers'   => $headers,
