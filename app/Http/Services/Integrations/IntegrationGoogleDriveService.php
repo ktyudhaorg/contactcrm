@@ -104,7 +104,7 @@ class IntegrationGoogleDriveService
         $this->ensureParentFolders(dirname($cloudPath));
 
         Cache::lock(self::LOCK_UPLOAD . md5($cloudPath), self::TTL_UPLOAD)
-            ->block(self::LOCK_WAIT_UPLOAD, fn() => Storage::cloud()->put($cloudPath, $binary));
+            ->block(self::LOCK_WAIT_UPLOAD, fn() => @Storage::cloud()->put($cloudPath, $binary));
 
         return Storage::cloud()->url($cloudPath);
     }
@@ -119,7 +119,7 @@ class IntegrationGoogleDriveService
                 $stream = fopen($localPath, 'r');
 
                 try {
-                    Storage::cloud()->put($cloudPath, $stream);
+                    @Storage::cloud()->put($cloudPath, $stream);
                 } finally {
                     if (is_resource($stream)) {
                         fclose($stream);
