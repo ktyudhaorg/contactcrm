@@ -19,7 +19,7 @@ return new class extends Migration
             $table->nullableMorphs('senderable');
 
             $table->enum('channel', ['email', 'whatsapp', 'telegram']);
-            $table->enum('content_type', ['text', 'image', 'file', 'document', 'audio', 'video']);
+            $table->enum('content_type', ['text', 'image', 'video', 'audio', 'document', 'sticker', 'ptt', 'file']);
             $table->text('body')->nullable();
 
             $table->text('attachment')->nullable();
