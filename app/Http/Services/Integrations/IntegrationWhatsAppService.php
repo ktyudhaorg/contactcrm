@@ -60,13 +60,16 @@ class IntegrationWhatsAppService
     }
 
     /** global */
-    public function sendGlobalMedia(string $to, string $filePath, string $message): array
+    public function sendGlobalMedia(string $to, string $binary, string $filename,  string $caption): array
     {
         $multipart = [
             [
                 'name'     => 'file',
-                'contents' => fopen($filePath, 'r'),
-                'filename' => basename($filePath),
+                // 'contents' => fopen($filePath, 'r'),
+                // 'filename' => basename($filePath),
+
+                'contents' => $binary,
+                'filename' => $filename,
             ],
             [
                 'name'     => 'to',
@@ -74,7 +77,7 @@ class IntegrationWhatsAppService
             ],
             [
                 'name'     => 'caption',
-                'contents' => $message,
+                'contents' => $caption,
             ],
         ];
 

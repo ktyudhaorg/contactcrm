@@ -2,12 +2,13 @@
 
 namespace App\Http\Services\WhatsApp;
 
+use App\Http\Requests\WhatsApp\WhatsAppSendMessageRequest;
 use App\Http\Services\Integrations\IntegrationWhatsAppService;
 use App\Http\Services\UseCases\Message\UseCaseMessageService;
 use App\Jobs\WhatsApp\WhatsAppSendMessageJob;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class WhatsAppService
 {
@@ -27,20 +28,30 @@ class WhatsAppService
         return $response['data'];
     }
 
-    public function sendMessage(Request $request)
+    public function sendMessage(WhatsAppSendMessageRequest $request)
     {
-        $validated = $request->validate([
-            'to'        => ['required', 'string'],
-            'message'   =>  ['required', 'string']
-        ]);
+        $validated = $request->validated();
 
         $validated['channel'] = 'whatsapp';
         $validated['senderable_id'] = $this->user->id;
         $validated['senderable_type'] = $this->user->getMorphClass();
 
+        if ($request->hasFile('media.data')) {
+            $file = $request->file('media.data');
+
+            $validated['media']['data']     = base64_encode(file_get_contents($file->getRealPath()));
+            $validated['media']['mimetype'] = $file->getMimeType();
+            $validated['media']['filename'] = $file->getClientOriginalName();
+            $validated['content_type']      = resolveContentType($file->getMimeType());
+        }
+
         $message = $this->useCaseMessageService->store($validated);
 
-        WhatsAppSendMessageJob::dispatch($validated['to'], $validated['message']);
+        WhatsAppSendMessageJob::dispatch(
+            to: $validated['to'],
+            message: $validated['message'] ?? null,
+            media: $validated['media'] ?? null,
+        );
 
         return $message;
     }

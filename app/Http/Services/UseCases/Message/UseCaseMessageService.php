@@ -21,8 +21,10 @@ class UseCaseMessageService
     public function store($data)
     {
         $whatsapp = normalizePhoneNumber($data['to']);
-        $contact = $this->contactRepository->findByType($whatsapp);
-
+        $contact = $this->contactRepository->firstOrCreate(
+            ['whatsapp' => $whatsapp],
+            ['name'  => $whatsapp]
+        );
         $conversation = $this->conversationRepository->firstOrCreate(
             [
                 'contact_id' => $contact->id,
@@ -40,8 +42,18 @@ class UseCaseMessageService
             'senderable_id'   => $data['senderable_id'],
             'senderable_type' => $data['senderable_type'],
             'channel'         => $data['channel'],
-            'body'            => $data['message'],
+            'body'            => $data['message'] ?? $data['media']['caption'] ?? null,
         ]);
+
+        if (!empty($data['media']['data'])) {
+            WhatsAppUploadMediaJob::dispatch(
+                $message->id,
+                $data['media'],
+                $data['content_type'],
+                $whatsapp,
+                MessageTypeEnum::SENT
+            );
+        }
 
         return $message->refresh();
     }

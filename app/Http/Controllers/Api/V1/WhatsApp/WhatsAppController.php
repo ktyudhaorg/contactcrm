@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\WhatsApp;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\WhatsApp\WhatsAppSendMessageRequest;
 use App\Http\Services\WhatsApp\WhatsAppService;
 
 class WhatsAppController extends Controller
@@ -20,7 +21,7 @@ class WhatsAppController extends Controller
         ]);
     }
 
-    public function sendMessage(Request $request)
+    public function sendMessage(WhatsAppSendMessageRequest $request)
     {
         $data = $this->whatsAppService->sendMessage($request);
 

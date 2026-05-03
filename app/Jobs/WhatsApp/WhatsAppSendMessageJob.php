@@ -19,8 +19,8 @@ class WhatsAppSendMessageJob implements ShouldQueue
      */
     public function __construct(
         protected string $to,
-        protected string $message,
-
+        protected ?string $message = null,
+        protected ?array  $media   = null,
     ) {
         // 
     }
@@ -30,6 +30,18 @@ class WhatsAppSendMessageJob implements ShouldQueue
      */
     public function handle(IntegrationWhatsAppService $integrationWhatsAppService): void
     {
+        if (!empty($this->media)) {
+            $caption  = $this->media['caption'] ?? $this->message ?? '';
+
+            $integrationWhatsAppService->sendGlobalMedia(
+                to: $this->to,
+                binary: base64_decode($this->media['data']),
+                filename: $this->media['filename'] ?? 'file',
+                caption: $caption,
+            );
+            return;
+        }
+
         $integrationWhatsAppService->sendMessage($this->to, $this->message);
     }
 
