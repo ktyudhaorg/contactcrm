@@ -8,7 +8,6 @@ use App\Http\Repositories\Conversation\ConversationRepository;
 use App\Http\Repositories\Conversation\MessageRepository;
 use App\Http\Services\Integrations\IntegrationGoogleDriveService;
 use App\Jobs\WhatsApp\WhatsAppUploadMediaJob;
-use Illuminate\Support\Facades\Storage;
 
 class UseCaseMessageService
 {
@@ -25,15 +24,21 @@ class UseCaseMessageService
         $contact = $this->contactRepository->findByType($whatsapp);
 
         $conversation = $this->conversationRepository->firstOrCreate(
-            ['contact_id' => $contact->id, 'channel' => $data['channel']],
-            ['assigned_to' => null, 'status' => 'open']
+            [
+                'contact_id' => $contact->id,
+                'channel' => $data['channel']
+            ],
+            [
+                'assigned_to' => $contact->assigned_to ?? null,
+                'status' => 'open'
+            ]
         );
 
         $message = $this->messageRepository->create([
             'conversation_id' => $conversation->id,
             'message_id'      => $data['id'] ?? null,
-            'sender_type'     => $data['sender_type'],
-            'sender_id'       => $data['user'],
+            'senderable_id'   => $data['senderable_id'],
+            'senderable_type' => $data['senderable_type'],
             'channel'         => $data['channel'],
             'body'            => $data['message'],
         ]);
@@ -50,15 +55,21 @@ class UseCaseMessageService
         );
 
         $conversation = $this->conversationRepository->firstOrCreate(
-            ['contact_id' => $contact->id, 'channel' => $data['channel']],
-            ['assigned_to' => null, 'status' => 'open']
+            [
+                'contact_id' => $contact->id,
+                'channel' => $data['channel']
+            ],
+            [
+                'assigned_to' => $contact->assigned_to ?? null,
+                'status' => 'open'
+            ]
         );
 
         $message = $this->messageRepository->create([
             'conversation_id' => $conversation->id,
             'message_id'      => $data['id'] ?? null,
-            'sender_type'     => 'contact',
-            'sender_id'       => $contact->id,
+            'senderable_id'   => $contact->id,
+            'senderable_type' => $contact->getMorphClass(),
             'channel'         => $data['channel'],
             'content_type'    => $data['content_type'],
             'body'            => $data['message'],

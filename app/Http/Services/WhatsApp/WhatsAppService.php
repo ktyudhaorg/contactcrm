@@ -35,8 +35,8 @@ class WhatsAppService
         ]);
 
         $validated['channel'] = 'whatsapp';
-        $validated['user'] = $this->user->id;
-        $validated['sender_type'] = 'agent';
+        $validated['senderable_id'] = $this->user->id;
+        $validated['senderable_type'] = $this->user->getMorphClass();
 
         $message = $this->useCaseMessageService->store($validated);
 

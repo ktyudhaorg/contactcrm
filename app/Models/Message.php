@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Message extends Model
 {
-    protected $fillable = ['conversation_id', 'sender_id', 'sender_type', 'message_id', 'channel', 'content_type', 'body', 'attachment', 'read_at'];
+    protected $fillable = ['conversation_id', 'senderable_id', 'senderable_type', 'message_id', 'channel', 'content_type', 'body', 'attachment', 'read_at'];
     protected $hidden = ['created_at', 'updated_at'];
 
     public function conversation()
@@ -14,8 +15,8 @@ class Message extends Model
         return $this->belongsTo(Conversation::class);
     }
 
-    public function sender()
+    public function senderable(): MorphTo
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        return $this->morphTo();
     }
 }

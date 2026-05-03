@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('conversation_id')->constrained('conversations')->cascadeOnDelete();
             $table->string('message_id')->nullable();
-            $table->foreignId('sender_id')->nullable()->constrained('users');
-            $table->enum('sender_type', ['contact', 'agent', 'bot', 'system']);
+
+            $table->nullableMorphs('senderable');
+
             $table->enum('channel', ['email', 'whatsapp', 'telegram']);
             $table->enum('content_type', ['text', 'image', 'file', 'document', 'audio', 'video']);
             $table->text('body')->nullable();
