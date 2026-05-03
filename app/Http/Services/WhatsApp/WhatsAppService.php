@@ -63,7 +63,7 @@ class WhatsAppService
             'id' => ['nullable', 'string'],
             'from' => ['required', 'string'],
             'name' => ['required', 'string'],
-            'content_type' => ['required', 'string', 'in:text,image,video,audio,document,file'],
+            'content_type' => ['required', 'string'],
             'message' => ['nullable', 'string'],
             'media' => ['nullable', 'array'],
             'media.data' => ['required_with:media', 'string'], // base64
