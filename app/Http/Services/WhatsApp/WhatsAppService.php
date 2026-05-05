@@ -61,7 +61,7 @@ class WhatsAppService
     {
         $validated = $request->validate([
             'id' => ['nullable', 'string'],
-            'from' => ['required', 'string'],
+            'number' => ['required', 'string'],
             'name' => ['required', 'string'],
             'content_type' => ['required', 'string'],
             'message' => ['nullable', 'string'],

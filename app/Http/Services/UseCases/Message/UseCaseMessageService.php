@@ -60,7 +60,7 @@ class UseCaseMessageService
 
     public function storeIncoming($data)
     {
-        $whatsapp = normalizePhoneNumber($data['from']);
+        $whatsapp = normalizePhoneNumber($data['number']);
         $direction = $data['is_from_me'] ? MessageTypeEnum::SENT : MessageTypeEnum::RECEIVED;
 
         $contact = $this->contactRepository->firstOrCreate(
