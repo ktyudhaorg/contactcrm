@@ -37,7 +37,7 @@ class WhatsAppUploadMediaJob implements ShouldQueue
         $fileName  = $this->contentType . '-' . now()->format('Ymd_His') . '.' . $ext;
         $cloudPath = $googleDrive->buildPath($this->whatsapp, $this->messageType, $this->contentType, $fileName);
 
-        $attachmentUrl = $googleDrive->upload($cloudPath, $decoded);
-        $messageRepository->update($this->messageId, ['attachment' => $attachmentUrl]);
+        $googleDrive->upload($cloudPath, $decoded);
+        $messageRepository->update($this->messageId, ['attachment' => $cloudPath]);
     }
 }

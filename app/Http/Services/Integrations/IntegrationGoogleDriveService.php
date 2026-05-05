@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Storage;
 
 class IntegrationGoogleDriveService
 {
-    private const LOCK_MKDIR  = 'gdrive_mkdir_';
-    private const LOCK_UPLOAD = 'gdrive_upload_';
-    private const CACHE_FOLDER = 'gdrive_folder_ready_';
+    private const LOCK_MKDIR    = 'gdrive_mkdir_';
+    private const LOCK_UPLOAD   = 'gdrive_upload_';
+    private const CACHE_FOLDER  = 'gdrive_folder_ready_';
+    private const CACHE_FILE    = 'gdrive_file_';
 
     private const TTL_FOLDER  = 30;   // menit — cache folder exists
+    private const TTL_FILE    = 60;
     private const TTL_MKDIR   = 20;   // detik — lock buat folder
     private const TTL_UPLOAD  = 30;   // detik — lock upload file
     private const LOCK_WAIT   = 10;   // detik — tunggu lock mkdir
@@ -204,5 +206,21 @@ class IntegrationGoogleDriveService
             $current = $current ? "{$current}/{$segment}" : $segment;
             Cache::forget(self::CACHE_FOLDER . md5($current));
         }
+    }
+
+    public function download(string $cloudPath): array
+    {
+        $cacheKey = self::CACHE_FILE . md5($cloudPath);
+
+        return Cache::remember($cacheKey, now()->addMinutes(self::TTL_FILE), function () use ($cloudPath) {
+            $binary   = Storage::cloud()->get($cloudPath);
+            $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->buffer($binary);
+
+            return [
+                'file' => base64_encode($binary),
+                'ext'  => $mimeType,
+            ];
+        });
     }
 }

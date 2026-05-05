@@ -6,10 +6,17 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WhatsApp\WhatsAppSendMessageRequest;
 use App\Http\Services\WhatsApp\WhatsAppService;
+use App\Models\Message;
 
 class WhatsAppController extends Controller
 {
     public function __construct(protected WhatsAppService $whatsAppService) {}
+
+    public function index()
+    {
+        $data['model'] = Message::all();
+        return view('website.index', $data);
+    }
 
     public function chats()
     {
