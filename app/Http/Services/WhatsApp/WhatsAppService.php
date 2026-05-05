@@ -65,6 +65,7 @@ class WhatsAppService
             'name' => ['required', 'string'],
             'content_type' => ['required', 'string'],
             'message' => ['nullable', 'string'],
+            'is_from_me'    => ['required',],
             'media' => ['nullable', 'array'],
             'media.data' => ['required_with:media', 'string'], // base64
             'media.mimetype' => ['required_with:media', 'string'],
