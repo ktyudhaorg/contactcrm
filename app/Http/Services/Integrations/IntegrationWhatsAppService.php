@@ -34,7 +34,7 @@ class IntegrationWhatsAppService
             $options['body'] = $body;
         }
 
-        if ($method === 'GET' && !empty($payload)) {
+        if ($method === 'GET' && ! empty($payload)) {
             $options['query'] = $payload;
         }
 
@@ -42,6 +42,7 @@ class IntegrationWhatsAppService
 
         return json_decode($response->getBody()->getContents(), true);
     }
+
     /**
      * Universal Request Multipart Handler (Auto HMAC)
      */
@@ -52,7 +53,7 @@ class IntegrationWhatsAppService
         $headers = $this->integrationHmacService->generateHeaders();
 
         $response = $this->client->post($endpoint, [
-            'headers'   => $headers,
+            'headers' => $headers,
             'multipart' => $multipart,
         ]);
 
@@ -60,11 +61,11 @@ class IntegrationWhatsAppService
     }
 
     /** global */
-    public function sendGlobalMedia(string $to, string $binary, string $filename,  string $caption): array
+    public function sendGlobalMedia(string $to, string $binary, string $filename, string $caption): array
     {
         $multipart = [
             [
-                'name'     => 'file',
+                'name' => 'file',
                 // 'contents' => fopen($filePath, 'r'),
                 // 'filename' => basename($filePath),
 
@@ -72,11 +73,11 @@ class IntegrationWhatsAppService
                 'filename' => $filename,
             ],
             [
-                'name'     => 'to',
+                'name' => 'to',
                 'contents' => $to,
             ],
             [
-                'name'     => 'caption',
+                'name' => 'caption',
                 'contents' => $caption,
             ],
         ];
@@ -87,7 +88,7 @@ class IntegrationWhatsAppService
     public function sendGlobalMessage(string $to, string $message): array
     {
         return $this->sendRequest('POST', '/api/whatsapp/send-message-global', [
-            'to'      => $to,
+            'to' => $to,
             'message' => $message,
         ]);
     }
@@ -101,7 +102,7 @@ class IntegrationWhatsAppService
     public function sendMessage(string $to, string $message): array
     {
         return $this->sendRequest('POST', '/api/whatsapp/send-message', [
-            'to'      => $to,
+            'to' => $to,
             'message' => $message,
         ]);
     }
@@ -109,16 +110,16 @@ class IntegrationWhatsAppService
     public function sendMediaWithUrl(string $to, string $mediaUrl, string $message): array
     {
         return $this->sendRequest('POST', '/api/whatsapp/send-media', [
-            'to'        => $to,
-            'mediaUrl'  => $mediaUrl,
-            'caption'   => $message,
+            'to' => $to,
+            'mediaUrl' => $mediaUrl,
+            'caption' => $message,
         ]);
     }
 
     public function getChatMessage(string $to, int $limit = 10): array
     {
         return $this->sendRequest('GET', '/api/whatsapp/chat-messages', [
-            'to'    => $to,
+            'to' => $to,
             'limit' => $limit,
         ]);
     }
@@ -140,9 +141,9 @@ class IntegrationWhatsAppService
     public function sendGroupMedia(string $to, string $mediaUrl, string $message): array
     {
         return $this->sendRequest('POST', '/api/whatsapp/send-media-group', [
-            'groupId'   => $to,
-            'mediaUrl'  => $mediaUrl,
-            'caption'   => $message,
+            'groupId' => $to,
+            'mediaUrl' => $mediaUrl,
+            'caption' => $message,
         ]);
     }
 
@@ -150,7 +151,7 @@ class IntegrationWhatsAppService
     {
         return $this->sendRequest('GET', '/api/whatsapp/group-messages', [
             'groupId' => $to,
-            'limit'   => $limit,
+            'limit' => $limit,
         ]);
     }
 }

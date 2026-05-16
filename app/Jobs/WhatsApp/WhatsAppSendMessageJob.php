@@ -12,6 +12,7 @@ class WhatsAppSendMessageJob implements ShouldQueue
     use Queueable;
 
     public $timeout = 120;
+
     public $tries = 3;
 
     /**
@@ -20,9 +21,9 @@ class WhatsAppSendMessageJob implements ShouldQueue
     public function __construct(
         protected string $to,
         protected ?string $message = null,
-        protected ?array  $media   = null,
+        protected ?array $media = null,
     ) {
-        // 
+        //
     }
 
     /**
@@ -30,8 +31,8 @@ class WhatsAppSendMessageJob implements ShouldQueue
      */
     public function handle(IntegrationWhatsAppService $integrationWhatsAppService): void
     {
-        if (!empty($this->media)) {
-            $caption  = $this->media['caption'] ?? $this->message ?? '';
+        if (! empty($this->media)) {
+            $caption = $this->media['caption'] ?? $this->message ?? '';
 
             $integrationWhatsAppService->sendGlobalMedia(
                 to: $this->to,
@@ -39,6 +40,7 @@ class WhatsAppSendMessageJob implements ShouldQueue
                 filename: $this->media['filename'] ?? 'file',
                 caption: $caption,
             );
+
             return;
         }
 
