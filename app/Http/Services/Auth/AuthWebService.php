@@ -4,27 +4,20 @@ namespace App\Http\Services\Auth;
 
 use App\Http\Repositories\User\UserRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
-class AuthService
+class AuthWebService
 {
-    const AUTH_GUARD = 'api';
-
-    const TOKEN = 'apiNextCrmToken';
+    const AUTH_GUARD = 'web';
 
     public function __construct(protected UserRepository $userRepository) {}
 
     public function login(string $email, string $password)
     {
-        $user = $this->userRepository->findUserAuth($email);
-
-        if (! $user || ! Hash::check($password, $user->password)) {
+        if (! Auth::attempt(['email' => $email, 'password' => $password])) {
             throw new \Exception('Email atau password salah.');
         }
 
-        $user->tokens()->delete();
-
-        return $user->createToken(self::TOKEN)->plainTextToken;
+        session()->regenerate();
     }
 
     public function me()
@@ -32,15 +25,14 @@ class AuthService
         if (Auth::guard(self::AUTH_GUARD)->check()) {
             return Auth::guard(self::AUTH_GUARD)->user();
         }
-
-        return 'tes';
     }
 
     public function logout()
     {
         if (Auth::guard(self::AUTH_GUARD)->check()) {
-            $user = Auth::guard(self::AUTH_GUARD)->user();
-            $user->currentAccessToken()->delete();
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
         }
     }
 }

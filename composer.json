@@ -14,6 +14,8 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+        "livewire/livewire": "^4.3",
+        "robsontenorio/mary": "^2.8",
         "spatie/laravel-permission": "^6.25",
         "yaza/laravel-google-drive-storage": "^4.1"
     },
